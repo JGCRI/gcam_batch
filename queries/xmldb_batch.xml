@@ -1,0 +1,22 @@
+<ModelInterfaceBatch>
+    <class name="ModelInterface.ModelGUI2.DbViewer">
+        <command name="XMLDB Batch File">
+            <queryFile>../queries/example_batch_query_corn_LU.xml</queryFile>
+            <outFile>queryout_corn_LU.csv</outFile>
+            <xmldbLocation>./database_basexdb</xmldbLocation>
+            <batchQueryResultsInDifferentSheets>false</batchQueryResultsInDifferentSheets>
+            <batchQueryIncludeCharts>false</batchQueryIncludeCharts>
+            <batchQuerySplitRunsInDifferentSheets>false</batchQuerySplitRunsInDifferentSheets>
+            <batchQueryReplaceResults>true</batchQueryReplaceResults>
+        </command>
+        <command name="XMLDB Batch File">
+            <queryFile>../queries/example_batch_query_non_co2_emissions.xml</queryFile>
+            <outFile>queryout_non_co2_emissions.csv</outFile>
+            <xmldbLocation>./database_basexdb</xmldbLocation>
+            <batchQueryResultsInDifferentSheets>false</batchQueryResultsInDifferentSheets>
+            <batchQueryIncludeCharts>false</batchQueryIncludeCharts>
+            <batchQuerySplitRunsInDifferentSheets>false</batchQuerySplitRunsInDifferentSheets>
+            <batchQueryReplaceResults>true</batchQueryReplaceResults>
+        </command>
+    </class>
+</ModelInterfaceBatch>

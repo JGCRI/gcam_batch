@@ -1,0 +1,20 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<BatchRunner xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="batch_runner.xsd">
+
+	<ComponentSet name="Ref">
+		<FileSet name="Ref">
+		</FileSet>	
+	</ComponentSet>
+
+	<ComponentSet name="Component1">
+		<FileSet name="_File_change1">
+			<Value name = "example1">../input/gcam-data-system/xml/example1_input.xml</Value>
+		</FileSet>
+
+		<FileSet name="_File_change2">
+			<Value name = "example2">../input/gcam-data-system/xml/example2_input.xml</Value>
+		</FileSet>
+	</ComponentSet>
+</BatchRunner>
+
