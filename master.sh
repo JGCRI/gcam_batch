@@ -23,25 +23,20 @@ fi
 
 
 # skip sync of files (possibly would want to do this from HOME to EMSL_HOME?)
-RUN_DIR_NAME=test_scripts
+RUN_DIR_NAME=run_batch
 WORKSPACE_DIR_NAME=/pic/projects/GCAM/Huster/GCAM_5.1.3
-SCRATCH=/pic/projects/GCAM/Huster/running_GCAM_5.1.3
+SCRATCH=/pic/projects/GCAM/Huster
 INPUT_OPTIONS="--include=*.xml --include=*.ini --include=climate/*.csv --include=Hist_to_2008_Annual.csv --include=*.jar --exclude=.svn --exclude=*.*" 
-echo "Syncing this directory to $SCRATCH..."
-#rsync -av ~/${RUN_DIR_NAME} ${SCRATCH}
 echo "Syncing input directory to $SCRATCH..."
-rsync -av $INPUT_OPTIONS ${WORKSPACE_DIR_NAME}/input ${SCRATCH}/${RUN_DIR_NAME}/
+#rsync -av $INPUT_OPTIONS ${WORKSPACE_DIR_NAME}/input ${SCRATCH}/${RUN_DIR_NAME}/
 echo "Syncing exe directory to $SCRATCH..."
-rsync -av ${WORKSPACE_DIR_NAME}/exe ${SCRATCH}/${RUN_DIR_NAME}/
+#rsync -av ${WORKSPACE_DIR_NAME}/exe ${SCRATCH}/${RUN_DIR_NAME}/
 echo "Syncing output directory to $SCRATCH..."
-rsync -av ${WORKSPACE_DIR_NAME}/output ${SCRATCH}/${RUN_DIR_NAME}/
+#rsync -av ${WORKSPACE_DIR_NAME}/output ${SCRATCH}/${RUN_DIR_NAME}/
 echo "Syncing magicc directory to $SCRATCH..."
-mkdir -p ${SCRATCH}/${RUN_DIR_NAME}/cvs/objects
-rsync -a ${WORKSPACE_DIR_NAME}/input/magicc/inputs ${SCRATCH}/${RUN_DIR_NAME}/input/magicc/
-#echo "Syncing model_data to $SCRATCH..."
-#rsync -a ${WORKSPACE_DIR_NAME}/cvs/objects/model_data ${SCRATCH}/${RUN_DIR_NAME}/cvs/objects/
-#otherwise will append
-#mv -f ${SCRATCH}/${RUN_DIR_NAME}/output/queryoutall*.csv ${SCRATCH}/${RUN_DIR_NAME}/output/queries/
+#mkdir -p ${SCRATCH}/${RUN_DIR_NAME}/cvs/objects
+#rsync -a ${WORKSPACE_DIR_NAME}/input/magicc/inputs ${SCRATCH}/${RUN_DIR_NAME}/input/magicc/
+
 
 cd ${SCRATCH}/${RUN_DIR_NAME}
 
@@ -55,8 +50,29 @@ template_root=`basename $1 | cut -f 1 -d.`
 echo $template_path
 echo $template_root
 
+# Read in necessary variables from user 
 echo "Generate permutations (y/n)?"
 read generate
+
+echo "First task number to run (normally 0)?"
+read first_task
+
+echo "Last task number to run (normally same as number of permutations - 1)?"
+read last_task
+
+echo "Number of cores to use?"
+read num_cores
+
+echo "Run $tasks tasks on cluster (y/n)?"
+read run
+
+if [[ $run = 'y' ]]; then
+	echo "Would you like to be emailed when the job is done? (y/n)"
+	read email
+fi
+
+
+
 if [[ $generate = 'y' ]]; then
         echo "Generating..."
         ./permutator.sh $1 $2
@@ -69,14 +85,6 @@ fi
 # 3. Figure out how many jobs will be run and generate the gcam.pbs batch file
 # --------------------------------------------------------------------------------------------
 
-echo "First task number to run (normally 0)?"
-read first_task
-
-echo "Last task number to run (normally same as number of permutations - 1)?"
-read last_task
-
-echo "Number of cores to use?"
-read num_cores
 
 let "tasks=$last_task - $first_task + 1"
 let "last_tasknum=$last_task + 1"
@@ -97,7 +105,7 @@ define ceil(number) {
 ceil($tasks / $num_cores)" | bc)
 
 
-sed "s/NUM_TASKS/${num_cores}/g" $PBS_TEMPLATEFILE \
+sed "s/NUM_TASKS/${num_cores}/g" $PBS_TEMPLATEFILE | sed "s/JOB_ARRAY/${first_task}-${last_task}/g" \
 	> $PBS_BATCHFILE
 
 # put the loop code into the batch file rather than just generating
@@ -124,16 +132,11 @@ srun -n \${leftoever_cores} ./mpi_wrapper.exe ${template_path}/${template_root} 
 # 4  Go ahead and run!
 # --------------------------------------------------------------------------------------------
 
-echo "Run $tasks tasks on cluster (y/n)?"
-read run
-
 if [[ $run = 'y' ]]; then
 
 	rm -rf errors	# clean up from last time
 	mkdir errors
 
-        echo "Would you like to be emailed when the job is done? (y/n)"
-        read email
         if [[ $email = 'y' ]]; then
              echo "
 #SBATCH --mail-user jonathan.huster@pnnl.gov
@@ -153,22 +156,3 @@ fi
 
 
 exit
-
-
-# --------------------------------------------------------------------------------------------
-# 5. Cleanup
-# --------------------------------------------------------------------------------------------
-
-# Delete the configuration files for tasks we're not running
-echo "All done.  Delete generated configuration files?"
-read del
-if [[ $del -eq 'y' ]]; then
-	t=0
-	while [ $t -lt $first_task ];
-	do
-		echo "Removing {template_root}_${t}.xml"
-		rm ${template_path}/${template_root}_${t}.xml
-		let "t += 1"
-	done
-fi
-
