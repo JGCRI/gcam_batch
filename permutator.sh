@@ -7,6 +7,7 @@
 #
 # Inputs:	$1	template configuration file (XML)
 #			$2 	batch runner file (XML)
+#               $3 'y' or 'n' to write the outputs to disk
 #
 # This script
 #	1) extracts file groups and values from the batch runner file into an array
@@ -17,7 +18,7 @@
 # January 2009
 #-------------------------------------------------------------------------
 
-EXPECTED_ARGS=2
+EXPECTED_ARGS=3
 
 ERROR_WRONGARGS=-1
 ERROR_NOFILES=-2
@@ -225,9 +226,7 @@ done
 #echo $permutations
 
 echo "$permutations files will be generated in $config_dir"
-echo -n "Write files to disk (y/n)? "
-read writetodisk
-if [[ $writetodisk = "y" ]]; then
+if [[ $3 = "y" ]]; then
 	do_permutations
 else
 	echo "Cancelled."

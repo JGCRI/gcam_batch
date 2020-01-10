@@ -23,16 +23,16 @@ fi
 
 
 # skip sync of files (possibly would want to do this from HOME to EMSL_HOME?)
-RUN_DIR_NAME=run_batch
-WORKSPACE_DIR_NAME=/pic/projects/GCAM/Huster/GCAM_5.1.3
-SCRATCH=/pic/projects/GCAM/Huster
+RUN_DIR_NAME=update_coal_path
+WORKSPACE_DIR_NAME=/pic/projects/GCAM/Huster/GCAM_update_coal_path
+SCRATCH=/pic/projects/GCAM/Huster/running_GCAM_update_coal_path
 INPUT_OPTIONS="--include=*.xml --include=*.ini --include=climate/*.csv --include=Hist_to_2008_Annual.csv --include=*.jar --exclude=.svn --exclude=*.*" 
 echo "Syncing input directory to $SCRATCH..."
-#rsync -av $INPUT_OPTIONS ${WORKSPACE_DIR_NAME}/input ${SCRATCH}/${RUN_DIR_NAME}/
+rsync -av $INPUT_OPTIONS ${WORKSPACE_DIR_NAME}/input ${SCRATCH}/${RUN_DIR_NAME}/
 echo "Syncing exe directory to $SCRATCH..."
-#rsync -av ${WORKSPACE_DIR_NAME}/exe ${SCRATCH}/${RUN_DIR_NAME}/
+rsync -av ${WORKSPACE_DIR_NAME}/exe ${SCRATCH}/${RUN_DIR_NAME}/
 echo "Syncing output directory to $SCRATCH..."
-#rsync -av ${WORKSPACE_DIR_NAME}/output ${SCRATCH}/${RUN_DIR_NAME}/
+rsync -av ${WORKSPACE_DIR_NAME}/output ${SCRATCH}/${RUN_DIR_NAME}/
 echo "Syncing magicc directory to $SCRATCH..."
 #mkdir -p ${SCRATCH}/${RUN_DIR_NAME}/cvs/objects
 #rsync -a ${WORKSPACE_DIR_NAME}/input/magicc/inputs ${SCRATCH}/${RUN_DIR_NAME}/input/magicc/
@@ -75,7 +75,8 @@ fi
 
 if [[ $generate = 'y' ]]; then
         echo "Generating..."
-        ./permutator.sh $1 $2
+	writetodisk=y
+        ./permutator.sh $1 $2 $3
         if [[ $? -lt 0 ]]; then
                 exit;
         fi
