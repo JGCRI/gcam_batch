@@ -36,7 +36,7 @@ err=$?
 # Xvfb :$2 -pn -audit 4 -screen 0 800x600x16 &
 # export DISPLAY=:${2}.0
 
-java -cp /pic/projects/GCAM/GCAM-libraries/lib/basex-8.6.7/BaseX.jar:/pic/projects/GCAM/GCAM-libraries/lib/jars/*:../output/modelinterface/ModelInterface.jar ModelInterface/InterfaceMain -b xmldb_batch.xml
+java -cp /pic/projects/GCAM/GCAM-libraries/lib/basex-8.6.7/BaseX.jar:/pic/projects/GCAM/GCAM-libraries/lib/jars/*:../output/modelinterface/ModelInterface.jar ModelInterface/InterfaceMain -b ../queries/xmldb_batch.xml
 
 # run-diag here
 
