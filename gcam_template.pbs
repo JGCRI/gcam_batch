@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -n NUM_TASKS
 #SBATCH -t 48:00:00
-#SBATCH -A COMP-FE
+#SBATCH -A
 #SBATCH --array=JOB_ARRAY
 #SBATCH --tasks-per-node=4
 
