@@ -114,17 +114,17 @@ sed "s/NUM_TASKS/${num_cores}/g" $PBS_TEMPLATEFILE | sed "s/JOB_ARRAY/${first_ta
 echo "
 ap_run_set=1
 # stop one before the end to make sure we don't over allocate runs
-while [ \$ap_run_set -lt $num_tasks ]
-do
+#while [ \$ap_run_set -lt $num_tasks ]
+#do
    let \"curr_first_task=$first_task + (\$ap_run_set - 1) * $num_cores\"
    srun -n ${num_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \${curr_first_task}
-   let \"ap_run_set=\$ap_run_set + 1\"
-done
+#   let \"ap_run_set=\$ap_run_set + 1\"
+#done
 # add the last one but make sure we adjust the number of cores so we don't
 # allocate more than the user wanted
-let \"curr_first_task=$first_task + (\$ap_run_set - 1) * $num_cores\"
-let \"leftoever_cores=$last_tasknum - \$curr_first_task\"
-srun -n \${leftoever_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \${curr_first_task}
+#let \"curr_first_task=$first_task + (\$ap_run_set - 1) * $num_cores\"
+#let \"leftoever_cores=$last_tasknum - \$curr_first_task\"
+#srun -n \${leftoever_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \${curr_first_task}
 "	>> $PBS_BATCHFILE
 
 # --------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ if [[ $run = 'y' ]]; then
 
         if [[ $email = 'y' ]]; then
              echo "
-#SBATCH --mail-user jonathan.huster@pnnl.gov
+#SBATCH --mail-user EXAMPLE_EMAIL@pnnl.gov
 #SBATCH --mail-type END
 "                    >> $PBS_BATCHFILE
 
