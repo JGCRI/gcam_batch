@@ -31,7 +31,7 @@ int main (int argc, char * argv[]) {
     //cout << final_id << endl;
     
     stringstream command2;
-    command2 << "bash run_model.sh " << argv[1] << " " << final_id;
+    command2 << "bash run_model.sh " << argv[1] << " " << base_id;
 
     cout << "About to run: " << command2.str() << endl;
    

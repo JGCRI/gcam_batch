@@ -3,22 +3,31 @@
 # This is the main script used for running GCAM on the Evergreen cluster
 # It is adapted from the NERSC version!
 
-# Preset necessary variables 
+# Preset necessary variables
+
+# Generate the configuration files?  
 generate=y
 
+# Write out the new config files?
 writetodisk=y
 
+# Which config file would you like to start with?
 first_task=0
 
+# Which config file would you like to end with? 
 last_task=0
 
+# How many cores should be used for each run?
 num_cores=1
 
+# Do you want the run to actually go?
 run=y
 
+# Do you want to be emailed when each run is done? 
 email=n
 
 
+# Input files' locations
 config=configuration-sets/config.xml
 batch=configuration-sets/batch.xml
 
@@ -43,9 +52,9 @@ fi
 
 
 # skip sync of files (possibly would want to do this from HOME to EMSL_HOME?)
-RUN_DIR_NAME=test_run_batch
-WORKSPACE_DIR_NAME=/pic/projects/GCAM/Huster/GCAM_core_NDC
-SCRATCH=/pic/projects/GCAM/Huster
+RUN_DIR_NAME=
+WORKSPACE_DIR_NAME=
+SCRATCH=
 INPUT_OPTIONS="--include=*.xml --include=*.ini --include=climate/*.csv --include=Hist_to_2008_Annual.csv --include=*.jar --exclude=.svn --exclude=*.*" 
 echo "Syncing input directory to $SCRATCH..."
 rsync -av $INPUT_OPTIONS ${WORKSPACE_DIR_NAME}/input ${SCRATCH}/${RUN_DIR_NAME}/
@@ -105,24 +114,10 @@ ceil($tasks / $num_cores)" | bc)
 sed "s/NUM_TASKS/${num_cores}/g" $PBS_TEMPLATEFILE | sed "s/JOB_ARRAY/${first_task}-${last_task}/g" \
 	> $PBS_BATCHFILE
 
-# put the loop code into the batch file rather than just generating
-# all the mpiruns here because there was a limit to 10 apruns in a 
-# single batch file for nersc and we are esentially maintaining
-# compatability
+# The job array will cycle through the jobs, so put an ID for each loop through
+
 echo "
-ap_run_set=1
-# stop one before the end to make sure we don't over allocate runs
-while [ \$ap_run_set -lt $num_tasks ]
-do
-   let \"curr_first_task=$first_task + (\$ap_run_set - 1) * $num_cores\"
-   srun -n ${num_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \${curr_first_task}
-   let \"ap_run_set=\$ap_run_set + 1\"
-done
-# add the last one but make sure we adjust the number of cores so we don't
-# allocate more than the user wanted
-let \"curr_first_task=$first_task + (\$ap_run_set - 1) * $num_cores\"
-let \"leftoever_cores=$last_tasknum - \$curr_first_task\"
-srun -n \${leftoever_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \${curr_first_task}
+   srun -n ${num_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \$SLURM_ARRAY_TASK_ID
 "	>> $PBS_BATCHFILE
 
 # --------------------------------------------------------------------------------------------
@@ -136,7 +131,7 @@ if [[ $run = 'y' ]]; then
 
         if [[ $email = 'y' ]]; then
              echo "
-#SBATCH --mail-user jonathan.huster@pnnl.gov
+#SBATCH --mail-user EXAMPLE_EMAIL@pnnl.gov
 #SBATCH --mail-type END
 "                    >> $PBS_BATCHFILE
 
