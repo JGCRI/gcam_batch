@@ -110,7 +110,7 @@ sed "s/NUM_TASKS/${num_cores}/g" $PBS_TEMPLATEFILE | sed "s/JOB_ARRAY/${first_ta
 # The job array will cycle through the jobs, so put an ID for each loop through
 
 echo "
-   srun -n ${num_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \${curr_first_task}
+   srun -n ${num_cores} ./mpi_wrapper.exe ${template_path}/${template_root} \$SLURM_ARRAY_TASK_ID
 "	>> $PBS_BATCHFILE
 
 # --------------------------------------------------------------------------------------------
