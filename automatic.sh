@@ -81,7 +81,7 @@ echo $template_root
 
 if [[ $generate = 'y' ]]; then
         echo "Generating..."
-        ./permutator_test.sh $config $batch $writetodisk
+        ./permutator.sh $config $batch $writetodisk
         if [[ $? -lt 0 ]]; then
                 exit;
         fi
