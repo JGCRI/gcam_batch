@@ -3,7 +3,7 @@
 #SBATCH -n 1
 ###SBATCH -l pmem=40GB
 #SBATCH -t 48:00:00
-#SBATCH -A COMP-FE
+#SBATCH -A 
 ###SBATCH -p shared
 
 
